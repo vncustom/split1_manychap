@@ -3,82 +3,120 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chia Văn Bản v2.6</title>
+  <title>Chia Văn Bản Thông Minh v3.0</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 900px;
       margin: 20px auto;
       padding: 0 20px;
+      line-height: 1.6;
+      color: #333;
     }
 
-    /* Responsive layout for mobile screens */
     @media (max-width: 600px) {
       body {
-        max-width: 100%;
-        margin: 0;
         padding: 10px;
+        margin: 0;
       }
     }
 
     .container {
-      background-color: #f5f5f5;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      background-color: #f9f9f9;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 20px;
     }
 
     .form-group {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2c3e50;
     }
 
     textarea {
       width: 100%;
-      min-height: 200px;
-      padding: 10px;
+      min-height: 250px;
+      padding: 12px;
       border: 1px solid #ddd;
-      border-radius: 4px;
+      border-radius: 6px;
       resize: vertical;
-      white-space: pre-wrap;
+      font-size: 15px;
+      line-height: 1.5;
     }
 
-    input[type="number"], select {
-      width: 100px;
-      padding: 5px;
+    input[type="number"] {
+      width: 80px;
+      padding: 8px;
       border: 1px solid #ddd;
       border-radius: 4px;
+      font-size: 15px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
     button {
-      background-color: #4CAF50;
+      background-color: #3498db;
       color: white;
       padding: 10px 20px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin-right: 10px;
-      margin-bottom: 10px;
+      font-size: 15px;
+      transition: background-color 0.3s;
+      flex-grow: 1;
     }
 
     button:hover {
-      background-color: #45a049;
+      background-color: #2980b9;
+    }
+
+    button.primary {
+      background-color: #2ecc71;
+    }
+
+    button.primary:hover {
+      background-color: #27ae60;
+    }
+
+    button.secondary {
+      background-color: #e74c3c;
+    }
+
+    button.secondary:hover {
+      background-color: #c0392b;
     }
 
     .stats {
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #e9e9e9;
-      border-radius: 4px;
+      margin: 15px 0;
+      padding: 12px;
+      background-color: #ecf0f1;
+      border-radius: 6px;
+      font-size: 14px;
     }
 
     .file-input-container {
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     #fileInput {
@@ -86,175 +124,146 @@
     }
 
     .file-label {
-      background-color: #2196F3;
+      background-color: #9b59b6;
       color: white;
       padding: 10px 20px;
       border-radius: 4px;
       cursor: pointer;
-      display: inline-block;
+      transition: background-color 0.3s;
     }
 
     .file-label:hover {
-      background-color: #1976D2;
+      background-color: #8e44ad;
     }
 
     #fileName {
-      margin-left: 10px;
-      color: #666;
+      color: #7f8c8d;
+      font-size: 14px;
     }
 
     .note {
-      font-size: 0.8em;
-      color: #666;
-      margin-bottom: 10px;
-    }
-  </style>
-</head>
-body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 0 20px;
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-bottom: 20px;
+      padding: 10px;
+      background-color: #f0f3f4;
+      border-radius: 4px;
     }
 
-    @media (max-width: 600px) {
-      body {
-        max-width: 100%;
-        margin: 0;
-        padding: 10px;
-      }
-    }
-
-    .container {
-      background-color: #f5f5f5;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
+    .detected-language {
       font-weight: bold;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 200px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      resize: vertical;
-      white-space: pre-wrap;
-    }
-
-    input[type="number"], select {
-      width: 100px;
-      padding: 5px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-right: 10px;
-      margin-bottom: 10px;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
-    .stats {
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #e9e9e9;
-      border-radius: 4px;
-    }
-
-    .file-input-container {
+      color: #16a085;
       margin-bottom: 15px;
-    }
-
-    #fileInput {
+      padding: 10px;
+      background-color: #e8f8f5;
+      border-radius: 4px;
       display: none;
     }
 
-    .file-label {
-      background-color: #2196F3;
-      color: white;
-      padding: 10px 20px;
+    .progress-container {
+      width: 100%;
+      background-color: #ecf0f1;
       border-radius: 4px;
+      margin: 15px 0;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 20px;
+      background-color: #3498db;
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.3s;
+      text-align: center;
+      color: white;
+      font-size: 12px;
+      line-height: 20px;
+    }
+
+    .advanced-options {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0f3f4;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .toggle-options {
+      color: #3498db;
       cursor: pointer;
-      display: inline-block;
+      font-size: 14px;
+      user-select: none;
     }
 
-    .file-label:hover {
-      background-color: #1976D2;
-    }
-
-    #fileName {
-      margin-left: 10px;
-      color: #666;
-    }
-
-    .note {
-      font-size: 0.8em;
-      color: #666;
-      margin-bottom: 10px;
+    .toggle-options:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Công Cụ Chia Văn Bản</h1>
+    <h1>Công Cụ Chia Văn Bản Thông Minh</h1>
     
     <div class="note">
-      Hỗ trợ các cấu trúc: 
+      <strong>Hỗ trợ tự động nhận diện:</strong>
       <ul>
-        <li>Tiếng Việt: "Chương X:" hoặc "## Chương X:"</li>
-        <li>Tiếng Trung: "第X章" hoặc "第X章 +tênchương"</li>
+        <li>Tiếng Việt: "Chương X", "Chương X:", "## Chương X", "Phần X", "Bài X"</li>
+        <li>Tiếng Trung: "第X章", "第X节", "第X回", "第X篇"</li>
+        <li>Tiếng Anh: "Chapter X", "Part X", "Section X"</li>
       </ul>
     </div>
     
-    <div class="form-group">
-      <label for="language">Ngôn ngữ:</label>
-      <select id="language">
-        <option value="vietnamese">Vietnamese</option>
-        <option value="chinese">Chinese</option>
-      </select>
+    <div id="languageInfo" class="detected-language"></div>
+    
+    <div class="progress-container" id="progressContainer">
+      <div class="progress-bar" id="progressBar">0%</div>
     </div>
     
     <div class="file-input-container">
       <label class="file-label" for="fileInput">
-        Chọn file văn bản
+        📁 Chọn file văn bản
       </label>
-      <input type="file" id="fileInput" accept=".txt">
       <span id="fileName"></span>
     </div>
+    <input type="file" id="fileInput" accept=".txt,.docx,.pdf">
     
     <div class="form-group">
       <label for="inputText">Văn bản cần chia:</label>
-      <textarea id="inputText" placeholder="Nhập văn bản cần chia vào đây..."></textarea>
+      <textarea id="inputText" placeholder="Nhập hoặc dán văn bản cần chia vào đây..."></textarea>
     </div>
     
     <div class="form-group">
       <label for="numParts">Số phần muốn chia mỗi chương:</label>
-      <input type="number" id="numParts" min="2" value="2">
+      <input type="number" id="numParts" min="1" max="10" value="2">
     </div>
     
-    <button onclick="splitText()">Chia văn bản</button>
-    <button onclick="downloadText()">Tải xuống .txt</button>
-    <button onclick="copyText()">Sao chép</button>
+    <div class="toggle-options" onclick="toggleAdvancedOptions()">⚙️ Tùy chọn nâng cao</div>
+    
+    <div class="advanced-options" id="advancedOptions">
+      <div class="form-group">
+        <label for="minWords">Số từ tối thiểu mỗi phần:</label>
+        <input type="number" id="minWords" min="50" value="200">
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="keepOriginal" checked>
+          Giữ nguyên cấu trúc gốc
+        </label>
+      </div>
+      <div class="form-group">
+        <label>
+          <input type="checkbox" id="addPageBreak">
+          Thêm ngắt trang giữa các phần
+        </label>
+      </div>
+    </div>
+    
+    <div class="button-group">
+      <button class="primary" onclick="splitText()">✂️ Chia văn bản</button>
+      <button onclick="downloadText()">📥 Tải xuống (.txt)</button>
+      <button onclick="copyText()">📋 Sao chép</button>
+      <button class="secondary" onclick="clearAll()">🗑️ Xóa hết</button>
+    </div>
     
     <div id="stats" class="stats" style="display: none;"></div>
     
@@ -265,174 +274,345 @@ body {
   </div>
 
   <script type="text/javascript">
-    // Thêm xử lý sự kiện cho file input
+    // Biến toàn cục để lưu trạng thái
+    let detectedLanguage = '';
+    let detectedStructure = '';
+    
+    // Xử lý sự kiện file input
     document.getElementById('fileInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
         document.getElementById('fileName').textContent = file.name;
+        showProgress(30);
         
         const reader = new FileReader();
         reader.onload = function(event) {
           document.getElementById('inputText').value = event.target.result;
+          showProgress(70);
+          setTimeout(() => {
+            detectTextInfo();
+            showProgress(100);
+            setTimeout(hideProgress, 500);
+          }, 300);
         };
         reader.readAsText(file, 'UTF-8');
       }
     });
 
-    function detectChapterStructure(text, language) {
-      if (language === 'vietnamese') {
-        const markdownChapterRegex = /## Chương\s+\d+:/;
-        const defaultChapterRegex = /Chương\s+\d+:/;
+    // Hiển thị thanh tiến trình
+    function showProgress(percent) {
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      progressContainer.style.display = 'block';
+      progressBar.style.width = percent + '%';
+      progressBar.textContent = percent + '%';
+    }
 
-        if (markdownChapterRegex.test(text)) {
-          return 'markdown';
-        } else if (defaultChapterRegex.test(text)) {
-          return 'default';
-        }
-      } else if (language === 'chinese') {
-        const chineseChapterRegex1 = /第\d+章\s*$/m; // "第X章" ở cuối dòng
-        const chineseChapterRegex2 = /第\d+章\s+.+/; // "第X章" có tên chương
+    // Ẩn thanh tiến trình
+    function hideProgress() {
+      document.getElementById('progressContainer').style.display = 'none';
+    }
+
+    // Toggle hiển thị tùy chọn nâng cao
+    function toggleAdvancedOptions() {
+      const options = document.getElementById('advancedOptions');
+      options.style.display = options.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Xóa tất cả nội dung
+    function clearAll() {
+      document.getElementById('inputText').value = '';
+      document.getElementById('outputText').value = '';
+      document.getElementById('fileName').textContent = '';
+      document.getElementById('fileInput').value = '';
+      document.getElementById('stats').style.display = 'none';
+      document.getElementById('languageInfo').style.display = 'none';
+    }
+
+    // Phát hiện ngôn ngữ và cấu trúc văn bản
+    function detectTextInfo() {
+      const inputText = document.getElementById('inputText').value;
+      if (!inputText.trim()) return;
+
+      const result = detectLanguageAndStructure(inputText);
+      if (!result) {
+        document.getElementById('languageInfo').textContent = 'Không nhận diện được cấu trúc chương';
+        document.getElementById('languageInfo').style.display = 'block';
+        return;
+      }
+
+      detectedLanguage = result.language;
+      detectedStructure = result.structure;
+
+      const languageNames = {
+        'vietnamese': 'Tiếng Việt',
+        'chinese': 'Tiếng Trung',
+        'english': 'Tiếng Anh'
+      };
+
+      const structureNames = {
+        'default': 'Cấu trúc thường',
+        'markdown': 'Cấu trúc Markdown',
+        'number-only': 'Chỉ số chương'
+      };
+
+      document.getElementById('languageInfo').textContent = 
+        `Đã nhận diện: ${languageNames[detectedLanguage]} (${structureNames[detectedStructure]})`;
+      document.getElementById('languageInfo').style.display = 'block';
+    }
+
+    // Hàm nhận diện ngôn ngữ và cấu trúc
+    function detectLanguageAndStructure(text) {
+      // Danh sách các mẫu regex cho từng ngôn ngữ
+      const patterns = [
+        // Tiếng Việt
+        { language: 'vietnamese', structure: 'markdown', regex: /^## (Chương|Phần|Bài)\s+(\d+)(:|\.|\s|$)/mi },
+        { language: 'vietnamese', structure: 'default', regex: /^(Chương|Phần|Bài)\s+(\d+)(:|\.|\s|$)/mi },
         
-        if (chineseChapterRegex1.test(text) || chineseChapterRegex2.test(text)) {
-          return 'chinese';
+        // Tiếng Trung
+        { language: 'chinese', structure: 'default', regex: /^(第\d+[章节篇回])(\s|$)/m },
+        
+        // Tiếng Anh
+        { language: 'english', structure: 'default', regex: /^(Chapter|Part|Section)\s+(\d+)(:|\.|\s|$)/mi },
+        { language: 'english', structure: 'number-only', regex: /^(\d+)\.\s/m }
+      ];
+
+      // Kiểm tra từng mẫu
+      for (const pattern of patterns) {
+        if (pattern.regex.test(text)) {
+          return {
+            language: pattern.language,
+            structure: pattern.structure
+          };
         }
       }
-      
+
       return null;
     }
 
+    // Hàm chính để chia văn bản
     function splitText() {
       const inputText = document.getElementById('inputText').value;
-      const numParts = parseInt(document.getElementById('numParts').value);
-      const language = document.getElementById('language').value;
+      const numParts = parseInt(document.getElementById('numParts').value) || 2;
+      const minWords = parseInt(document.getElementById('minWords').value) || 200;
+      const keepOriginal = document.getElementById('keepOriginal').checked;
+      const addPageBreak = document.getElementById('addPageBreak').checked;
 
       if (!inputText.trim()) {
         alert('Vui lòng nhập văn bản hoặc chọn file!');
         return;
       }
 
-      const chapterStructure = detectChapterStructure(inputText, language);
-
-      if (!chapterStructure) {
-        alert('Không tìm thấy cấu trúc chương phù hợp với ngôn ngữ đã chọn!');
-        return;
+      // Nếu chưa nhận diện, thử nhận diện lại
+      if (!detectedLanguage) {
+        detectTextInfo();
+        if (!detectedLanguage) {
+          alert('Không thể nhận diện cấu trúc văn bản. Vui lòng kiểm tra lại!');
+          return;
+        }
       }
 
-      let chapters = [];
-      if (language === 'vietnamese') {
-        chapters = chapterStructure === 'default' 
-          ? inputText.split(/(?=Chương\s+\d+:)/) 
-          : inputText.split(/(?=## Chương\s+\d+:)/);
-      } else if (language === 'chinese') {
-        chapters = inputText.split(/(?=第\d+章)/);
-      }
-
-      if (chapters.length === 0) {
-        alert('Không tìm thấy chương nào trong văn bản!');
-        return;
-      }
-
-      let finalResult = '';
-      let currentChapterNumber = 0;
-      let totalWords = 0;
-
-      chapters.forEach((chapter) => {
-        if (!chapter.trim()) return;
+      showProgress(10);
+      
+      try {
+        // Tách các chương theo ngôn ngữ đã nhận diện
+        let chapters = [];
+        let splitRegex;
         
-        let chapterTitleMatch;
-        let chapterNumber;
-        let chapterTitle;
-        let chapterContent;
-        let isChineseEndOfLine = false;
-        
-        if (language === 'vietnamese') {
-          chapterTitleMatch = chapterStructure === 'default'
-            ? chapter.match(/Chương\s+(\d+):\s+(.+?)(?:\n|$)/)
-            : chapter.match(/## Chương\s+(\d+):\s+(.+?)(?:\n|$)/);
-          
-          if (!chapterTitleMatch) return;
-          
-          chapterNumber = parseInt(chapterTitleMatch[1]);
-          chapterTitle = chapterTitleMatch[2];
-          chapterContent = chapter.substring(chapterTitleMatch[0].length);
-        } else if (language === 'chinese') {
-          // Kiểm tra chính xác hơn: "第X章" phải kết thúc bằng \n hoặc kết thúc chuỗi
-          const endOfLineMatch = chapter.match(/第(\d+)章(\s*)(\n|$)/);
-          if (endOfLineMatch && (endOfLineMatch[3] === '\n' || endOfLineMatch[3] === '')) {
-            isChineseEndOfLine = true;
-            chapterNumber = parseInt(endOfLineMatch[1]);
-            chapterTitle = '';
-            chapterContent = chapter.substring(endOfLineMatch[0].length);
+        if (detectedLanguage === 'vietnamese') {
+          if (detectedStructure === 'markdown') {
+            splitRegex = /(?=^## (Chương|Phần|Bài)\s+\d+(:|\.|\s|$))/m;
           } else {
-            // Trường hợp có tên chương
-            chapterTitleMatch = chapter.match(/第(\d+)章(?:\s+(.+))?(?:\n|$)/);
-            if (!chapterTitleMatch) return;
-            
-            chapterNumber = parseInt(chapterTitleMatch[1]);
-            chapterTitle = chapterTitleMatch[2] || '';
-            chapterContent = chapter.substring(chapterTitleMatch[0].length);
+            splitRegex = /(?=^(Chương|Phần|Bài)\s+\d+(:|\.|\s|$))/m;
+          }
+        } 
+        else if (detectedLanguage === 'chinese') {
+          splitRegex = /(?=^第\d+[章节篇回])/m;
+        }
+        else if (detectedLanguage === 'english') {
+          if (detectedStructure === 'number-only') {
+            splitRegex = /(?=^\d+\.\s)/m;
+          } else {
+            splitRegex = /(?=^(Chapter|Part|Section)\s+\d+(:|\.|\s|$))/mi;
           }
         }
-        
-        if (currentChapterNumber === 0) {
-          currentChapterNumber = chapterNumber;
-        }
-        
-        const result = splitChapter(
-          chapterContent, 
-          currentChapterNumber, 
-          chapterTitle, 
-          numParts, 
-          language,
-          isChineseEndOfLine
-        );
-        finalResult += result.text;
-        currentChapterNumber = result.nextChapterNumber;
-        
-        totalWords += chapterContent.split(/\s+/).length;
-      });
 
-      document.getElementById('outputText').value = finalResult;
-      document.getElementById('stats').textContent = `Tổng số từ: ${totalWords}`;
-      document.getElementById('stats').style.display = 'block';
+        chapters = inputText.split(splitRegex).filter(ch => ch.trim());
+        showProgress(30);
+
+        if (chapters.length === 0) {
+          alert('Không tìm thấy chương nào trong văn bản!');
+          hideProgress();
+          return;
+        }
+
+        let finalResult = '';
+        let currentChapterNumber = 0;
+        let totalWords = 0;
+        let totalChapters = 0;
+
+        // Xử lý từng chương
+        chapters.forEach((chapter, index) => {
+          if (!chapter.trim()) return;
+          
+          let chapterTitleMatch;
+          let chapterNumber;
+          let chapterTitle = '';
+          let chapterContent;
+          let isEndOfLine = false;
+          
+          // Xử lý theo từng ngôn ngữ
+          if (detectedLanguage === 'vietnamese') {
+            const titleRegex = detectedStructure === 'markdown' 
+              ? /^## (Chương|Phần|Bài)\s+(\d+)(:|\.|\s|$)(.*?)$/mi 
+              : /^(Chương|Phần|Bài)\s+(\d+)(:|\.|\s|$)(.*?)$/mi;
+            
+            chapterTitleMatch = chapter.match(titleRegex);
+            if (!chapterTitleMatch) return;
+            
+            chapterNumber = parseInt(chapterTitleMatch[2]);
+            chapterTitle = (chapterTitleMatch[4] || '').trim();
+            chapterContent = chapter.substring(chapterTitleMatch[0].length);
+          } 
+          else if (detectedLanguage === 'chinese') {
+            // Kiểm tra xem có phải ở cuối dòng không
+            const endOfLineMatch = chapter.match(/^(第\d+[章节篇回])(\s*)$/m);
+            if (endOfLineMatch) {
+              isEndOfLine = true;
+              chapterNumber = parseInt(endOfLineMatch[1].match(/\d+/)[0]);
+              chapterContent = chapter.substring(endOfLineMatch[0].length);
+            } else {
+              chapterTitleMatch = chapter.match(/^(第\d+[章节篇回])(?:\s+(.*?))?$/m);
+              if (!chapterTitleMatch) return;
+              
+              chapterNumber = parseInt(chapterTitleMatch[1].match(/\d+/)[0]);
+              chapterTitle = (chapterTitleMatch[2] || '').trim();
+              chapterContent = chapter.substring(chapterTitleMatch[0].length);
+            }
+          }
+          else if (detectedLanguage === 'english') {
+            if (detectedStructure === 'number-only') {
+              chapterTitleMatch = chapter.match(/^(\d+)\.\s(.*?)$/m);
+              if (!chapterTitleMatch) return;
+              
+              chapterNumber = parseInt(chapterTitleMatch[1]);
+              chapterTitle = (chapterTitleMatch[2] || '').trim();
+              chapterContent = chapter.substring(chapterTitleMatch[0].length);
+            } else {
+              chapterTitleMatch = chapter.match(/^(Chapter|Part|Section)\s+(\d+)(:|\.|\s|$)(.*?)$/mi);
+              if (!chapterTitleMatch) return;
+              
+              chapterNumber = parseInt(chapterTitleMatch[2]);
+              chapterTitle = (chapterTitleMatch[4] || '').trim();
+              chapterContent = chapter.substring(chapterTitleMatch[0].length);
+            }
+          }
+          
+          if (currentChapterNumber === 0) {
+            currentChapterNumber = chapterNumber;
+          }
+          
+          // Tính toán số từ trong chương
+          const wordCount = chapterContent.split(/\s+/).filter(w => w.trim()).length;
+          totalWords += wordCount;
+          
+          // Xác định số phần thực tế (không ít hơn minWords)
+          let actualParts = numParts;
+          if (wordCount / numParts < minWords) {
+            actualParts = Math.max(1, Math.floor(wordCount / minWords));
+          }
+          
+          const result = splitChapter(
+            chapterContent, 
+            currentChapterNumber, 
+            chapterTitle, 
+            actualParts, 
+            isEndOfLine,
+            keepOriginal,
+            addPageBreak
+          );
+          
+          finalResult += result.text;
+          currentChapterNumber = result.nextChapterNumber;
+          totalChapters++;
+          
+          showProgress(30 + (index / chapters.length * 60));
+        });
+
+        document.getElementById('outputText').value = finalResult;
+        document.getElementById('stats').innerHTML = `
+          <strong>Thống kê:</strong><br>
+          - Tổng số chương: ${totalChapters}<br>
+          - Tổng số từ: ${totalWords}<br>
+          - Từ trung bình mỗi phần: ${Math.round(totalWords/(totalChapters*numParts))}
+        `;
+        document.getElementById('stats').style.display = 'block';
+        showProgress(100);
+        setTimeout(hideProgress, 500);
+      } catch (error) {
+        console.error(error);
+        alert('Có lỗi xảy ra khi xử lý văn bản: ' + error.message);
+        hideProgress();
+      }
     }
 
-    function splitChapter(chapterText, chapterNumber, chapterTitle, numParts, language = 'vietnamese', isChineseEndOfLine = false) {
+    // Hàm chia một chương thành nhiều phần
+    function splitChapter(chapterText, chapterNumber, chapterTitle, numParts, isEndOfLine = false, keepOriginal = true, addPageBreak = false) {
       const lines = chapterText.split('\n');
+      const pageBreak = addPageBreak ? '\n\n---\n\n' : '\n\n';
       
-      const linesWithWords = lines.map(line => ({
-        text: line,
-        wordCount: line.trim() ? line.trim().split(/\s+/).length : 0
-      }));
+      // Tách thành các đoạn lớn hơn là các dòng đơn lẻ
+      const paragraphs = [];
+      let currentParagraph = [];
+      
+      for (const line of lines) {
+        if (line.trim() === '' && currentParagraph.length > 0) {
+          paragraphs.push({
+            text: currentParagraph.join('\n'),
+            wordCount: currentParagraph.join(' ').split(/\s+/).filter(w => w.trim()).length
+          });
+          currentParagraph = [];
+        } else {
+          currentParagraph.push(line);
+        }
+      }
+      
+      // Thêm đoạn cuối cùng nếu còn
+      if (currentParagraph.length > 0) {
+        paragraphs.push({
+          text: currentParagraph.join('\n'),
+          wordCount: currentParagraph.join(' ').split(/\s+/).filter(w => w.trim()).length
+        });
+      }
 
-      const totalWords = linesWithWords.reduce((sum, line) => sum + line.wordCount, 0);
+      const totalWords = paragraphs.reduce((sum, p) => sum + p.wordCount, 0);
       const targetWordsPerPart = Math.ceil(totalWords / numParts);
 
       const parts = [];
       let currentPart = [];
       let currentWordCount = 0;
 
-      linesWithWords.forEach((line) => {
+      paragraphs.forEach((paragraph) => {
         if (
-          currentWordCount + line.wordCount > targetWordsPerPart &&
+          currentWordCount + paragraph.wordCount > targetWordsPerPart &&
           parts.length < numParts - 1 &&
           currentWordCount > 0
         ) {
           parts.push({
-            lines: currentPart,
+            text: currentPart.join('\n\n'),
             wordCount: currentWordCount
           });
-          currentPart = [line];
-          currentWordCount = line.wordCount;
+          currentPart = [paragraph.text];
+          currentWordCount = paragraph.wordCount;
         } else {
-          currentPart.push(line);
-          currentWordCount += line.wordCount;
+          currentPart.push(paragraph.text);
+          currentWordCount += paragraph.wordCount;
         }
       });
 
       if (currentPart.length > 0) {
         parts.push({
-          lines: currentPart,
+          text: currentPart.join('\n\n'),
           wordCount: currentWordCount
         });
       }
@@ -442,14 +622,21 @@ body {
         const partNumber = index + 1;
         const currentChapter = chapterNumber + index;
         
+        // Tạo tiêu đề chương tùy theo ngôn ngữ và cấu trúc
         let chapterTitleWithPart = '';
         
-        if (language === 'vietnamese') {
-          chapterTitleWithPart = numParts > 1 
-            ? `Chương ${currentChapter}: ${chapterTitle} (${partNumber})`
-            : `Chương ${currentChapter}: ${chapterTitle}`;
-        } else if (language === 'chinese') {
-          if (isChineseEndOfLine) {
+        if (detectedLanguage === 'vietnamese') {
+          const prefix = detectedStructure === 'markdown' ? '## ' : '';
+          const type = chapterTitle.match(/^(Chương|Phần|Bài)/) ? '' : 'Chương ';
+          
+          if (numParts > 1) {
+            chapterTitleWithPart = `${prefix}${type}${currentChapter}: ${chapterTitle} (${partNumber})`;
+          } else {
+            chapterTitleWithPart = `${prefix}${type}${currentChapter}: ${chapterTitle}`;
+          }
+        } 
+        else if (detectedLanguage === 'chinese') {
+          if (isEndOfLine) {
             chapterTitleWithPart = numParts > 1 
               ? `第${currentChapter}章 (${partNumber})`
               : `第${currentChapter}章`;
@@ -459,18 +646,34 @@ body {
               : `第${currentChapter}章 ${chapterTitle}`;
           }
         }
+        else if (detectedLanguage === 'english') {
+          if (detectedStructure === 'number-only') {
+            chapterTitleWithPart = numParts > 1
+              ? `${currentChapter}. ${chapterTitle} (Part ${partNumber})`
+              : `${currentChapter}. ${chapterTitle}`;
+          } else {
+            const type = chapterTitleMatch ? chapterTitleMatch[1] : 'Chapter';
+            chapterTitleWithPart = numParts > 1
+              ? `${type} ${currentChapter}: ${chapterTitle} (Part ${partNumber})`
+              : `${type} ${currentChapter}: ${chapterTitle}`;
+          }
+        }
         
+        // Thêm tiêu đề vào kết quả
         result += chapterTitleWithPart;
         
-        // Thêm newline nếu là trường hợp "第X章" ở cuối dòng
-        if (isChineseEndOfLine) {
+        // Thêm newline nếu là trường hợp tiêu đề ở cuối dòng
+        if (isEndOfLine) {
           result += '\n';
         } else {
           result += '\n';
         }
         
-        result += part.lines.map(line => line.text).join('\n');
-        result += '\n\n';
+        // Thêm nội dung phần
+        result += part.text;
+        
+        // Thêm ngắt trang hoặc xuống dòng
+        result += pageBreak;
       });
 
       return {
@@ -479,13 +682,21 @@ body {
       };
     }
 
+    // Sao chép kết quả
     function copyText() {
       const outputText = document.getElementById('outputText');
       outputText.select();
       document.execCommand('copy');
-      alert('Đã sao chép nội dung');
+      
+      // Hiển thị thông báo
+      const originalText = outputText.value;
+      outputText.value = "✓ Đã sao chép vào clipboard!\n\n" + originalText;
+      setTimeout(() => {
+        outputText.value = originalText;
+      }, 2000);
     }
 
+    // Tải xuống file
     function downloadText() {
       const text = document.getElementById('outputText').value;
       if (!text) {
@@ -497,12 +708,37 @@ body {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'van_ban_chia.txt';
+      a.download = generateFileName();
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     }
+
+    // Tạo tên file tự động
+    function generateFileName() {
+      const now = new Date();
+      const dateStr = now.toISOString().slice(0, 10);
+      const timeStr = now.toTimeString().slice(0, 8).replace(/:/g, '-');
+      
+      let langPrefix = '';
+      if (detectedLanguage === 'vietnamese') langPrefix = 'VN_';
+      else if (detectedLanguage === 'chinese') langPrefix = 'CN_';
+      else if (detectedLanguage === 'english') langPrefix = 'EN_';
+      
+      return `${langPrefix}split_text_${dateStr}_${timeStr}.txt`;
+    }
+
+    // Tự động nhận diện khi người dùng nhập liệu
+    document.getElementById('inputText').addEventListener('input', function() {
+      detectTextInfo();
+    });
+
+    // Khởi tạo
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ẩn các phần tử không cần thiết lúc đầu
+      document.getElementById('advancedOptions').style.display = 'none';
+    });
   </script>
 </body>
 </html>
