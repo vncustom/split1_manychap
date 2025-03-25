@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chia Văn Bản Thông Minh v3.0</title>
+  <title>Smart Text Splitter v3.1</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -202,14 +202,14 @@
 </head>
 <body>
   <div class="container">
-    <h1>Công Cụ Chia Văn Bản Thông Minh</h1>
+    <h1>Smart Text Splitter</h1>
     
     <div class="note">
-      <strong>Hỗ trợ tự động nhận diện:</strong>
+      <strong>Supported formats (auto-detected):</strong>
       <ul>
-        <li>Tiếng Việt: "Chương X", "Chương X:", "## Chương X", "Phần X", "Bài X"</li>
-        <li>Tiếng Trung: "第X章", "第X节", "第X回", "第X篇"</li>
-        <li>Tiếng Anh: "Chapter X", "Part X", "Section X"</li>
+        <li>Vietnamese: "Chương X", "Phần X", "Bài X" (with or without colon)</li>
+        <li>Chinese: "第X章", "第X节", "第X回", "第X篇"</li>
+        <li>English: "Chapter X", "Chapter X:" (with optional title)</li>
       </ul>
     </div>
     
@@ -221,64 +221,63 @@
     
     <div class="file-input-container">
       <label class="file-label" for="fileInput">
-        📁 Chọn file văn bản
+        📁 Select text file
       </label>
       <span id="fileName"></span>
     </div>
     <input type="file" id="fileInput" accept=".txt,.docx,.pdf">
     
     <div class="form-group">
-      <label for="inputText">Văn bản cần chia:</label>
-      <textarea id="inputText" placeholder="Nhập hoặc dán văn bản cần chia vào đây..."></textarea>
+      <label for="inputText">Text to split:</label>
+      <textarea id="inputText" placeholder="Paste or type your text here..."></textarea>
     </div>
     
     <div class="form-group">
-      <label for="numParts">Số phần muốn chia mỗi chương:</label>
+      <label for="numParts">Number of parts per chapter:</label>
       <input type="number" id="numParts" min="1" max="10" value="2">
     </div>
     
-    <div class="toggle-options" onclick="toggleAdvancedOptions()">⚙️ Tùy chọn nâng cao</div>
+    <div class="toggle-options" onclick="toggleAdvancedOptions()">⚙️ Advanced options</div>
     
     <div class="advanced-options" id="advancedOptions">
       <div class="form-group">
-        <label for="minWords">Số từ tối thiểu mỗi phần:</label>
-        <input type="number" id="minWords" min="50" value="200">
+        <label for="minWords">Minimum words per part:</label>
+        <input type="number" id="minWords" min="50" value="1">
       </div>
       <div class="form-group">
         <label>
           <input type="checkbox" id="keepOriginal" checked>
-          Giữ nguyên cấu trúc gốc
+          Keep original structure
         </label>
       </div>
       <div class="form-group">
         <label>
           <input type="checkbox" id="addPageBreak">
-          Thêm ngắt trang giữa các phần
+          Add page breaks between parts
         </label>
       </div>
     </div>
     
     <div class="button-group">
-      <button class="primary" onclick="splitText()">✂️ Chia văn bản</button>
-      <button onclick="downloadText()">📥 Tải xuống (.txt)</button>
-      <button onclick="copyText()">📋 Sao chép</button>
-      <button class="secondary" onclick="clearAll()">🗑️ Xóa hết</button>
+      <button class="primary" onclick="splitText()">✂️ Split Text</button>
+      <button onclick="downloadText()">📥 Download (.txt)</button>
+      <button onclick="copyText()">📋 Copy</button>
+      <button class="secondary" onclick="clearAll()">🗑️ Clear All</button>
     </div>
     
     <div id="stats" class="stats" style="display: none;"></div>
     
     <div class="form-group">
-      <label for="outputText">Kết quả:</label>
+      <label for="outputText">Result:</label>
       <textarea id="outputText" readonly></textarea>
     </div>
   </div>
 
   <script type="text/javascript">
-    // Biến toàn cục để lưu trạng thái
     let detectedLanguage = '';
     let detectedStructure = '';
     
-    // Xử lý sự kiện file input
+    // File input handling
     document.getElementById('fileInput').addEventListener('change', function(e) {
       const file = e.target.files[0];
       if (file) {
@@ -299,7 +298,6 @@
       }
     });
 
-    // Hiển thị thanh tiến trình
     function showProgress(percent) {
       const progressContainer = document.getElementById('progressContainer');
       const progressBar = document.getElementById('progressBar');
@@ -308,18 +306,15 @@
       progressBar.textContent = percent + '%';
     }
 
-    // Ẩn thanh tiến trình
     function hideProgress() {
       document.getElementById('progressContainer').style.display = 'none';
     }
 
-    // Toggle hiển thị tùy chọn nâng cao
     function toggleAdvancedOptions() {
       const options = document.getElementById('advancedOptions');
       options.style.display = options.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Xóa tất cả nội dung
     function clearAll() {
       document.getElementById('inputText').value = '';
       document.getElementById('outputText').value = '';
@@ -329,55 +324,21 @@
       document.getElementById('languageInfo').style.display = 'none';
     }
 
-    // Phát hiện ngôn ngữ và cấu trúc văn bản
-    function detectTextInfo() {
-      const inputText = document.getElementById('inputText').value;
-      if (!inputText.trim()) return;
-
-      const result = detectLanguageAndStructure(inputText);
-      if (!result) {
-        document.getElementById('languageInfo').textContent = 'Không nhận diện được cấu trúc chương';
-        document.getElementById('languageInfo').style.display = 'block';
-        return;
-      }
-
-      detectedLanguage = result.language;
-      detectedStructure = result.structure;
-
-      const languageNames = {
-        'vietnamese': 'Tiếng Việt',
-        'chinese': 'Tiếng Trung',
-        'english': 'Tiếng Anh'
-      };
-
-      const structureNames = {
-        'default': 'Cấu trúc thường',
-        'markdown': 'Cấu trúc Markdown',
-        'number-only': 'Chỉ số chương'
-      };
-
-      document.getElementById('languageInfo').textContent = 
-        `Đã nhận diện: ${languageNames[detectedLanguage]} (${structureNames[detectedStructure]})`;
-      document.getElementById('languageInfo').style.display = 'block';
-    }
-
-    // Hàm nhận diện ngôn ngữ và cấu trúc
+    // Improved language detection with precise English regex
     function detectLanguageAndStructure(text) {
-      // Danh sách các mẫu regex cho từng ngôn ngữ
       const patterns = [
-        // Tiếng Việt
+        // Vietnamese
         { language: 'vietnamese', structure: 'markdown', regex: /^## (Chương|Phần|Bài)\s+(\d+)(:|\.|\s|$)/mi },
         { language: 'vietnamese', structure: 'default', regex: /^(Chương|Phần|Bài)\s+(\d+)(:|\.|\s|$)/mi },
         
-        // Tiếng Trung
+        // Chinese
         { language: 'chinese', structure: 'default', regex: /^(第\d+[章节篇回])(\s|$)/m },
         
-        // Tiếng Anh
-        { language: 'english', structure: 'default', regex: /^(Chapter|Part|Section)\s+(\d+)(:|\.|\s|$)/mi },
+        // English (updated with precise Chapter regex)
+        { language: 'english', structure: 'default', regex: /^Chapter\s+\d+(:|\.|\s|$)/mi },
         { language: 'english', structure: 'number-only', regex: /^(\d+)\.\s/m }
       ];
 
-      // Kiểm tra từng mẫu
       for (const pattern of patterns) {
         if (pattern.regex.test(text)) {
           return {
@@ -390,7 +351,31 @@
       return null;
     }
 
-    // Hàm chính để chia văn bản
+    function detectTextInfo() {
+      const inputText = document.getElementById('inputText').value;
+      if (!inputText.trim()) return;
+
+      const result = detectLanguageAndStructure(inputText);
+      if (!result) {
+        document.getElementById('languageInfo').textContent = 'No chapter structure detected';
+        document.getElementById('languageInfo').style.display = 'block';
+        return;
+      }
+
+      detectedLanguage = result.language;
+      detectedStructure = result.structure;
+
+      const languageNames = {
+        'vietnamese': 'Vietnamese',
+        'chinese': 'Chinese',
+        'english': 'English'
+      };
+
+      document.getElementById('languageInfo').textContent = 
+        `Detected: ${languageNames[detectedLanguage]} (${detectedStructure} format)`;
+      document.getElementById('languageInfo').style.display = 'block';
+    }
+
     function splitText() {
       const inputText = document.getElementById('inputText').value;
       const numParts = parseInt(document.getElementById('numParts').value) || 2;
@@ -399,15 +384,14 @@
       const addPageBreak = document.getElementById('addPageBreak').checked;
 
       if (!inputText.trim()) {
-        alert('Vui lòng nhập văn bản hoặc chọn file!');
+        alert('Please enter or upload text to split!');
         return;
       }
 
-      // Nếu chưa nhận diện, thử nhận diện lại
       if (!detectedLanguage) {
         detectTextInfo();
         if (!detectedLanguage) {
-          alert('Không thể nhận diện cấu trúc văn bản. Vui lòng kiểm tra lại!');
+          alert('Cannot detect chapter structure. Please check your text!');
           return;
         }
       }
@@ -415,7 +399,6 @@
       showProgress(10);
       
       try {
-        // Tách các chương theo ngôn ngữ đã nhận diện
         let chapters = [];
         let splitRegex;
         
@@ -433,7 +416,8 @@
           if (detectedStructure === 'number-only') {
             splitRegex = /(?=^\d+\.\s)/m;
           } else {
-            splitRegex = /(?=^(Chapter|Part|Section)\s+\d+(:|\.|\s|$))/mi;
+            // Precise English chapter splitting
+            splitRegex = /(?=^Chapter\s+\d+(:|\.|\s|$))/mi;
           }
         }
 
@@ -441,7 +425,7 @@
         showProgress(30);
 
         if (chapters.length === 0) {
-          alert('Không tìm thấy chương nào trong văn bản!');
+          alert('No chapters found in the text!');
           hideProgress();
           return;
         }
@@ -451,7 +435,6 @@
         let totalWords = 0;
         let totalChapters = 0;
 
-        // Xử lý từng chương
         chapters.forEach((chapter, index) => {
           if (!chapter.trim()) return;
           
@@ -461,7 +444,6 @@
           let chapterContent;
           let isEndOfLine = false;
           
-          // Xử lý theo từng ngôn ngữ
           if (detectedLanguage === 'vietnamese') {
             const titleRegex = detectedStructure === 'markdown' 
               ? /^## (Chương|Phần|Bài)\s+(\d+)(:|\.|\s|$)(.*?)$/mi 
@@ -475,7 +457,6 @@
             chapterContent = chapter.substring(chapterTitleMatch[0].length);
           } 
           else if (detectedLanguage === 'chinese') {
-            // Kiểm tra xem có phải ở cuối dòng không
             const endOfLineMatch = chapter.match(/^(第\d+[章节篇回])(\s*)$/m);
             if (endOfLineMatch) {
               isEndOfLine = true;
@@ -499,11 +480,12 @@
               chapterTitle = (chapterTitleMatch[2] || '').trim();
               chapterContent = chapter.substring(chapterTitleMatch[0].length);
             } else {
-              chapterTitleMatch = chapter.match(/^(Chapter|Part|Section)\s+(\d+)(:|\.|\s|$)(.*?)$/mi);
+              // Precise English chapter matching
+              chapterTitleMatch = chapter.match(/^Chapter\s+(\d+)(:|\.|\s|$)(.*?)$/mi);
               if (!chapterTitleMatch) return;
               
-              chapterNumber = parseInt(chapterTitleMatch[2]);
-              chapterTitle = (chapterTitleMatch[4] || '').trim();
+              chapterNumber = parseInt(chapterTitleMatch[1]);
+              chapterTitle = (chapterTitleMatch[3] || '').trim();
               chapterContent = chapter.substring(chapterTitleMatch[0].length);
             }
           }
@@ -512,11 +494,9 @@
             currentChapterNumber = chapterNumber;
           }
           
-          // Tính toán số từ trong chương
           const wordCount = chapterContent.split(/\s+/).filter(w => w.trim()).length;
           totalWords += wordCount;
           
-          // Xác định số phần thực tế (không ít hơn minWords)
           let actualParts = numParts;
           if (wordCount / numParts < minWords) {
             actualParts = Math.max(1, Math.floor(wordCount / minWords));
@@ -541,27 +521,25 @@
 
         document.getElementById('outputText').value = finalResult;
         document.getElementById('stats').innerHTML = `
-          <strong>Thống kê:</strong><br>
-          - Tổng số chương: ${totalChapters}<br>
-          - Tổng số từ: ${totalWords}<br>
-          - Từ trung bình mỗi phần: ${Math.round(totalWords/(totalChapters*numParts))}
+          <strong>Statistics:</strong><br>
+          - Total chapters: ${totalChapters}<br>
+          - Total words: ${totalWords}<br>
+          - Average words per part: ${Math.round(totalWords/(totalChapters*numParts))}
         `;
         document.getElementById('stats').style.display = 'block';
         showProgress(100);
         setTimeout(hideProgress, 500);
       } catch (error) {
         console.error(error);
-        alert('Có lỗi xảy ra khi xử lý văn bản: ' + error.message);
+        alert('Error processing text: ' + error.message);
         hideProgress();
       }
     }
 
-    // Hàm chia một chương thành nhiều phần
     function splitChapter(chapterText, chapterNumber, chapterTitle, numParts, isEndOfLine = false, keepOriginal = true, addPageBreak = false) {
       const lines = chapterText.split('\n');
       const pageBreak = addPageBreak ? '\n\n---\n\n' : '\n\n';
       
-      // Tách thành các đoạn lớn hơn là các dòng đơn lẻ
       const paragraphs = [];
       let currentParagraph = [];
       
@@ -577,7 +555,6 @@
         }
       }
       
-      // Thêm đoạn cuối cùng nếu còn
       if (currentParagraph.length > 0) {
         paragraphs.push({
           text: currentParagraph.join('\n'),
@@ -622,7 +599,6 @@
         const partNumber = index + 1;
         const currentChapter = chapterNumber + index;
         
-        // Tạo tiêu đề chương tùy theo ngôn ngữ và cấu trúc
         let chapterTitleWithPart = '';
         
         if (detectedLanguage === 'vietnamese') {
@@ -652,27 +628,23 @@
               ? `${currentChapter}. ${chapterTitle} (Part ${partNumber})`
               : `${currentChapter}. ${chapterTitle}`;
           } else {
-            const type = chapterTitleMatch ? chapterTitleMatch[1] : 'Chapter';
+            // Proper English chapter formatting
+            const separator = chapterTitle ? ': ' : '';
             chapterTitleWithPart = numParts > 1
-              ? `${type} ${currentChapter}: ${chapterTitle} (Part ${partNumber})`
-              : `${type} ${currentChapter}: ${chapterTitle}`;
+              ? `Chapter ${currentChapter}${separator}${chapterTitle} (Part ${partNumber})`
+              : `Chapter ${currentChapter}${separator}${chapterTitle}`;
           }
         }
         
-        // Thêm tiêu đề vào kết quả
         result += chapterTitleWithPart;
         
-        // Thêm newline nếu là trường hợp tiêu đề ở cuối dòng
         if (isEndOfLine) {
           result += '\n';
         } else {
           result += '\n';
         }
         
-        // Thêm nội dung phần
         result += part.text;
-        
-        // Thêm ngắt trang hoặc xuống dòng
         result += pageBreak;
       });
 
@@ -682,25 +654,22 @@
       };
     }
 
-    // Sao chép kết quả
     function copyText() {
       const outputText = document.getElementById('outputText');
       outputText.select();
       document.execCommand('copy');
       
-      // Hiển thị thông báo
       const originalText = outputText.value;
-      outputText.value = "✓ Đã sao chép vào clipboard!\n\n" + originalText;
+      outputText.value = "✓ Copied to clipboard!\n\n" + originalText;
       setTimeout(() => {
         outputText.value = originalText;
       }, 2000);
     }
 
-    // Tải xuống file
     function downloadText() {
       const text = document.getElementById('outputText').value;
       if (!text) {
-        alert('Chưa có nội dung để tải xuống!');
+        alert('No content to download!');
         return;
       }
 
@@ -715,7 +684,6 @@
       URL.revokeObjectURL(url);
     }
 
-    // Tạo tên file tự động
     function generateFileName() {
       const now = new Date();
       const dateStr = now.toISOString().slice(0, 10);
@@ -729,14 +697,11 @@
       return `${langPrefix}split_text_${dateStr}_${timeStr}.txt`;
     }
 
-    // Tự động nhận diện khi người dùng nhập liệu
     document.getElementById('inputText').addEventListener('input', function() {
       detectTextInfo();
     });
 
-    // Khởi tạo
     document.addEventListener('DOMContentLoaded', function() {
-      // Ẩn các phần tử không cần thiết lúc đầu
       document.getElementById('advancedOptions').style.display = 'none';
     });
   </script>
