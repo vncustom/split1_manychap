@@ -3,10 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chia Văn Bản v2.5</title>
+  <title>Chia Văn Bản v2.6</title>
   <style>
-    /* Giữ nguyên style cũ */
     body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0 20px;
+    }
+
+    /* Responsive layout for mobile screens */
+    @media (max-width: 600px) {
+      body {
+        max-width: 100%;
+        margin: 0;
+        padding: 10px;
+      }
+    }
+
+    .container {
+      background-color: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: vertical;
+      white-space: pre-wrap;
+    }
+
+    input[type="number"], select {
+      width: 100px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .stats {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #e9e9e9;
+      border-radius: 4px;
+    }
+
+    .file-input-container {
+      margin-bottom: 15px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .file-label {
+      background-color: #2196F3;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .file-label:hover {
+      background-color: #1976D2;
+    }
+
+    #fileName {
+      margin-left: 10px;
+      color: #666;
+    }
+
+    .note {
+      font-size: 0.8em;
+      color: #666;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+body {
       font-family: Arial, sans-serif;
       max-width: 800px;
       margin: 20px auto;
@@ -49,18 +153,12 @@
     }
 
     input[type="number"], select {
-      width: 150px;
+      width: 100px;
       padding: 5px;
       border: 1px solid #ddd;
       border-radius: 4px;
     }
 
-    /* Thêm style cho dropdown */
-    .language-select {
-      margin-bottom: 15px;
-    }
-
-    /* Giữ nguyên các style còn lại từ code cũ */
     button {
       background-color: #4CAF50;
       color: white;
@@ -76,29 +174,66 @@
       background-color: #45a049;
     }
 
-    /* Các style khác giữ nguyên */
+    .stats {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #e9e9e9;
+      border-radius: 4px;
+    }
+
+    .file-input-container {
+      margin-bottom: 15px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .file-label {
+      background-color: #2196F3;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .file-label:hover {
+      background-color: #1976D2;
+    }
+
+    #fileName {
+      margin-left: 10px;
+      color: #666;
+    }
+
+    .note {
+      font-size: 0.8em;
+      color: #666;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Công Cụ Chia Văn Bản</h1>
     
-    <div class="form-group language-select">
-      <label for="languageSelect">Chọn ngôn ngữ:</label>
-      <select id="languageSelect">
-        <option value="vietnamese">Tiếng Việt</option>
-        <option value="chinese">Tiếng Trung</option>
+    <div class="note">
+      Hỗ trợ các cấu trúc: 
+      <ul>
+        <li>Tiếng Việt: "Chương X:" hoặc "## Chương X:"</li>
+        <li>Tiếng Trung: "第X章" hoặc "第X章 +tênchương"</li>
+      </ul>
+    </div>
+    
+    <div class="form-group">
+      <label for="language">Ngôn ngữ:</label>
+      <select id="language">
+        <option value="vietnamese">Vietnamese</option>
+        <option value="chinese">Chinese</option>
       </select>
     </div>
     
-    <div class="note">
-      Hỗ trợ các cấu trúc: 
-      <span id="structureNote">
-        "Chương X:" và "## Chương X:"
-      </span>
-    </div>
-    
-    <!-- Giữ nguyên các phần còn lại của HTML -->
     <div class="file-input-container">
       <label class="file-label" for="fileInput">
         Chọn file văn bản
@@ -130,19 +265,19 @@
   </div>
 
   <script type="text/javascript">
-    // Thêm sự kiện thay đổi ngôn ngữ
-    document.getElementById('languageSelect').addEventListener('change', function() {
-      const languageSelect = this.value;
-      const structureNote = document.getElementById('structureNote');
-      
-      if (languageSelect === 'vietnamese') {
-        structureNote.textContent = '"Chương X:" và "## Chương X:"';
-      } else {
-        structureNote.textContent = '"第X章" và "第11章 tênchương"';
+    // Thêm xử lý sự kiện cho file input
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById('fileName').textContent = file.name;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          document.getElementById('inputText').value = event.target.result;
+        };
+        reader.readAsText(file, 'UTF-8');
       }
     });
-
-    // Giữ nguyên code đọc file input cũ
 
     function detectChapterStructure(text, language) {
       if (language === 'vietnamese') {
@@ -155,8 +290,10 @@
           return 'default';
         }
       } else if (language === 'chinese') {
-        const chineseChapterRegex = /第\d+章/;
-        if (chineseChapterRegex.test(text)) {
+        const chineseChapterRegex1 = /第\d+章\s*$/m; // "第X章" ở cuối dòng
+        const chineseChapterRegex2 = /第\d+章\s+.+/; // "第X章" có tên chương
+        
+        if (chineseChapterRegex1.test(text) || chineseChapterRegex2.test(text)) {
           return 'chinese';
         }
       }
@@ -167,30 +304,26 @@
     function splitText() {
       const inputText = document.getElementById('inputText').value;
       const numParts = parseInt(document.getElementById('numParts').value);
-      const language = document.getElementById('languageSelect').value;
+      const language = document.getElementById('language').value;
 
       if (!inputText.trim()) {
         alert('Vui lòng nhập văn bản hoặc chọn file!');
         return;
       }
 
-      // Tự động phát hiện cấu trúc chương
       const chapterStructure = detectChapterStructure(inputText, language);
 
       if (!chapterStructure) {
-        const errorMessage = language === 'vietnamese' 
-          ? 'Không tìm thấy cấu trúc chương. Văn bản phải có định dạng "Chương X:" hoặc "## Chương X:"'
-          : 'Không tìm thấy cấu trúc chương. Văn bản phải có định dạng "第X章"';
-        alert(errorMessage);
+        alert('Không tìm thấy cấu trúc chương phù hợp với ngôn ngữ đã chọn!');
         return;
       }
 
-      let chapters;
+      let chapters = [];
       if (language === 'vietnamese') {
         chapters = chapterStructure === 'default' 
           ? inputText.split(/(?=Chương\s+\d+:)/) 
           : inputText.split(/(?=## Chương\s+\d+:)/);
-      } else {
+      } else if (language === 'chinese') {
         chapters = inputText.split(/(?=第\d+章)/);
       }
 
@@ -206,26 +339,39 @@
       chapters.forEach((chapter) => {
         if (!chapter.trim()) return;
         
-        let chapterNumber, chapterTitle, chapterContent;
+        let chapterTitleMatch;
+        let chapterNumber;
+        let chapterTitle;
+        let chapterContent;
+        let isChineseEndOfLine = false;
         
         if (language === 'vietnamese') {
-          const chapterTitleMatch = chapterStructure === 'default'
+          chapterTitleMatch = chapterStructure === 'default'
             ? chapter.match(/Chương\s+(\d+):\s+(.+?)(?:\n|$)/)
             : chapter.match(/## Chương\s+(\d+):\s+(.+?)(?:\n|$)/);
-
+          
           if (!chapterTitleMatch) return;
           
           chapterNumber = parseInt(chapterTitleMatch[1]);
           chapterTitle = chapterTitleMatch[2];
           chapterContent = chapter.substring(chapterTitleMatch[0].length);
-        } else {
-          const chapterTitleMatch = chapter.match(/第(\d+)章\s*([^\n]+)?/);
-          
-          if (!chapterTitleMatch) return;
-          
-          chapterNumber = parseInt(chapterTitleMatch[1]);
-          chapterTitle = chapterTitleMatch[2] || '';
-          chapterContent = chapter.substring(chapterTitleMatch[0].length);
+        } else if (language === 'chinese') {
+          // Kiểm tra chính xác hơn: "第X章" phải kết thúc bằng \n hoặc kết thúc chuỗi
+          const endOfLineMatch = chapter.match(/第(\d+)章(\s*)(\n|$)/);
+          if (endOfLineMatch && (endOfLineMatch[3] === '\n' || endOfLineMatch[3] === '')) {
+            isChineseEndOfLine = true;
+            chapterNumber = parseInt(endOfLineMatch[1]);
+            chapterTitle = '';
+            chapterContent = chapter.substring(endOfLineMatch[0].length);
+          } else {
+            // Trường hợp có tên chương
+            chapterTitleMatch = chapter.match(/第(\d+)章(?:\s+(.+))?(?:\n|$)/);
+            if (!chapterTitleMatch) return;
+            
+            chapterNumber = parseInt(chapterTitleMatch[1]);
+            chapterTitle = chapterTitleMatch[2] || '';
+            chapterContent = chapter.substring(chapterTitleMatch[0].length);
+          }
         }
         
         if (currentChapterNumber === 0) {
@@ -238,9 +384,8 @@
           chapterTitle, 
           numParts, 
           language,
-          chapterStructure
+          isChineseEndOfLine
         );
-        
         finalResult += result.text;
         currentChapterNumber = result.nextChapterNumber;
         
@@ -252,7 +397,7 @@
       document.getElementById('stats').style.display = 'block';
     }
 
-    function splitChapter(chapterText, chapterNumber, chapterTitle, numParts, language, chapterStructure) {
+    function splitChapter(chapterText, chapterNumber, chapterTitle, numParts, language = 'vietnamese', isChineseEndOfLine = false) {
       const lines = chapterText.split('\n');
       
       const linesWithWords = lines.map(line => ({
@@ -297,22 +442,33 @@
         const partNumber = index + 1;
         const currentChapter = chapterNumber + index;
         
-        let chapterTitleWithPart;
+        let chapterTitleWithPart = '';
+        
         if (language === 'vietnamese') {
           chapterTitleWithPart = numParts > 1 
-            ? (chapterStructure === 'default' 
-                ? `Chương ${currentChapter}: ${chapterTitle} (${partNumber})`
-                : `## Chương ${currentChapter}: ${chapterTitle} (${partNumber})`)
-            : (chapterStructure === 'default'
-                ? `Chương ${currentChapter}: ${chapterTitle}`
-                : `## Chương ${currentChapter}: ${chapterTitle}`);
-        } else {
-          chapterTitleWithPart = numParts > 1
-            ? `第${currentChapter}章 ${chapterTitle} (${partNumber})`
-            : `第${currentChapter}章 ${chapterTitle}`;
+            ? `Chương ${currentChapter}: ${chapterTitle} (${partNumber})`
+            : `Chương ${currentChapter}: ${chapterTitle}`;
+        } else if (language === 'chinese') {
+          if (isChineseEndOfLine) {
+            chapterTitleWithPart = numParts > 1 
+              ? `第${currentChapter}章 (${partNumber})`
+              : `第${currentChapter}章`;
+          } else {
+            chapterTitleWithPart = numParts > 1 
+              ? `第${currentChapter}章 ${chapterTitle} (${partNumber})`
+              : `第${currentChapter}章 ${chapterTitle}`;
+          }
         }
         
-        result += chapterTitleWithPart + '\n';
+        result += chapterTitleWithPart;
+        
+        // Thêm newline nếu là trường hợp "第X章" ở cuối dòng
+        if (isChineseEndOfLine) {
+          result += '\n';
+        } else {
+          result += '\n';
+        }
+        
         result += part.lines.map(line => line.text).join('\n');
         result += '\n\n';
       });
@@ -322,20 +478,6 @@
         nextChapterNumber: chapterNumber + numParts
       };
     }
-
-    // Giữ nguyên các hàm download, copy, file input cũ
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        document.getElementById('fileName').textContent = file.name;
-        
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          document.getElementById('inputText').value = event.target.result;
-        };
-        reader.readAsText(file, 'UTF-8');
-      }
-    });
 
     function copyText() {
       const outputText = document.getElementById('outputText');
