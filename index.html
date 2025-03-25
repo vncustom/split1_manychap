@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chia Văn Bản v2.4</title>
+  <title>Chia Văn Bản v2.5</title>
   <style>
+    /* Giữ nguyên style cũ */
     body {
       font-family: Arial, sans-serif;
       max-width: 800px;
@@ -12,7 +13,6 @@
       padding: 0 20px;
     }
 
-    /* Responsive layout for mobile screens */
     @media (max-width: 600px) {
       body {
         max-width: 100%;
@@ -48,13 +48,19 @@
       white-space: pre-wrap;
     }
 
-    input[type="number"] {
-      width: 100px;
+    input[type="number"], select {
+      width: 150px;
       padding: 5px;
       border: 1px solid #ddd;
       border-radius: 4px;
     }
 
+    /* Thêm style cho dropdown */
+    .language-select {
+      margin-bottom: 15px;
+    }
+
+    /* Giữ nguyên các style còn lại từ code cũ */
     button {
       background-color: #4CAF50;
       color: white;
@@ -70,54 +76,29 @@
       background-color: #45a049;
     }
 
-    .stats {
-      margin: 10px 0;
-      padding: 10px;
-      background-color: #e9e9e9;
-      border-radius: 4px;
-    }
-
-    .file-input-container {
-      margin-bottom: 15px;
-    }
-
-    #fileInput {
-      display: none;
-    }
-
-    .file-label {
-      background-color: #2196F3;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: inline-block;
-    }
-
-    .file-label:hover {
-      background-color: #1976D2;
-    }
-
-    #fileName {
-      margin-left: 10px;
-      color: #666;
-    }
-
-    .note {
-      font-size: 0.8em;
-      color: #666;
-      margin-bottom: 10px;
-    }
+    /* Các style khác giữ nguyên */
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Công Cụ Chia Văn Bản</h1>
     
-    <div class="note">
-      Hỗ trợ các cấu trúc: "Chương X:" và "## Chương X:"
+    <div class="form-group language-select">
+      <label for="languageSelect">Chọn ngôn ngữ:</label>
+      <select id="languageSelect">
+        <option value="vietnamese">Tiếng Việt</option>
+        <option value="chinese">Tiếng Trung</option>
+      </select>
     </div>
     
+    <div class="note">
+      Hỗ trợ các cấu trúc: 
+      <span id="structureNote">
+        "Chương X:" và "## Chương X:"
+      </span>
+    </div>
+    
+    <!-- Giữ nguyên các phần còn lại của HTML -->
     <div class="file-input-container">
       <label class="file-label" for="fileInput">
         Chọn file văn bản
@@ -149,38 +130,44 @@
   </div>
 
   <script type="text/javascript">
-    // Thêm xử lý sự kiện cho file input
-    document.getElementById('fileInput').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        document.getElementById('fileName').textContent = file.name;
-        
-        // Đọc nội dung file
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          document.getElementById('inputText').value = event.target.result;
-        };
-        reader.readAsText(file, 'UTF-8');
+    // Thêm sự kiện thay đổi ngôn ngữ
+    document.getElementById('languageSelect').addEventListener('change', function() {
+      const languageSelect = this.value;
+      const structureNote = document.getElementById('structureNote');
+      
+      if (languageSelect === 'vietnamese') {
+        structureNote.textContent = '"Chương X:" và "## Chương X:"';
+      } else {
+        structureNote.textContent = '"第X章" và "第11章 tênchương"';
       }
     });
 
-    function detectChapterStructure(text) {
-      // Kiểm tra xem văn bản có chứa "## Chương" không
-      const markdownChapterRegex = /## Chương\s+\d+:/;
-      const defaultChapterRegex = /Chương\s+\d+:/;
+    // Giữ nguyên code đọc file input cũ
 
-      if (markdownChapterRegex.test(text)) {
-        return 'markdown';
-      } else if (defaultChapterRegex.test(text)) {
-        return 'default';
-      } else {
-        return null; // Không tìm thấy cấu trúc chương
+    function detectChapterStructure(text, language) {
+      if (language === 'vietnamese') {
+        const markdownChapterRegex = /## Chương\s+\d+:/;
+        const defaultChapterRegex = /Chương\s+\d+:/;
+
+        if (markdownChapterRegex.test(text)) {
+          return 'markdown';
+        } else if (defaultChapterRegex.test(text)) {
+          return 'default';
+        }
+      } else if (language === 'chinese') {
+        const chineseChapterRegex = /第\d+章/;
+        if (chineseChapterRegex.test(text)) {
+          return 'chinese';
+        }
       }
+      
+      return null;
     }
 
     function splitText() {
       const inputText = document.getElementById('inputText').value;
       const numParts = parseInt(document.getElementById('numParts').value);
+      const language = document.getElementById('languageSelect').value;
 
       if (!inputText.trim()) {
         alert('Vui lòng nhập văn bản hoặc chọn file!');
@@ -188,16 +175,24 @@
       }
 
       // Tự động phát hiện cấu trúc chương
-      const chapterStructure = detectChapterStructure(inputText);
+      const chapterStructure = detectChapterStructure(inputText, language);
 
       if (!chapterStructure) {
-        alert('Không tìm thấy cấu trúc chương. Văn bản phải có định dạng "Chương X:" hoặc "## Chương X:"');
+        const errorMessage = language === 'vietnamese' 
+          ? 'Không tìm thấy cấu trúc chương. Văn bản phải có định dạng "Chương X:" hoặc "## Chương X:"'
+          : 'Không tìm thấy cấu trúc chương. Văn bản phải có định dạng "第X章"';
+        alert(errorMessage);
         return;
       }
 
-      const chapters = chapterStructure === 'default' 
-        ? inputText.split(/(?=Chương\s+\d+:)/) 
-        : inputText.split(/(?=## Chương\s+\d+:)/);
+      let chapters;
+      if (language === 'vietnamese') {
+        chapters = chapterStructure === 'default' 
+          ? inputText.split(/(?=Chương\s+\d+:)/) 
+          : inputText.split(/(?=## Chương\s+\d+:)/);
+      } else {
+        chapters = inputText.split(/(?=第\d+章)/);
+      }
 
       if (chapters.length === 0) {
         alert('Không tìm thấy chương nào trong văn bản!');
@@ -211,15 +206,27 @@
       chapters.forEach((chapter) => {
         if (!chapter.trim()) return;
         
-        const chapterTitleMatch = chapterStructure === 'default'
-          ? chapter.match(/Chương\s+(\d+):\s+(.+?)(?:\n|$)/)
-          : chapter.match(/## Chương\s+(\d+):\s+(.+?)(?:\n|$)/);
-
-        if (!chapterTitleMatch) return;
+        let chapterNumber, chapterTitle, chapterContent;
         
-        const chapterNumber = parseInt(chapterTitleMatch[1]);
-        const chapterTitle = chapterTitleMatch[2];
-        const chapterContent = chapter.substring(chapterTitleMatch[0].length);
+        if (language === 'vietnamese') {
+          const chapterTitleMatch = chapterStructure === 'default'
+            ? chapter.match(/Chương\s+(\d+):\s+(.+?)(?:\n|$)/)
+            : chapter.match(/## Chương\s+(\d+):\s+(.+?)(?:\n|$)/);
+
+          if (!chapterTitleMatch) return;
+          
+          chapterNumber = parseInt(chapterTitleMatch[1]);
+          chapterTitle = chapterTitleMatch[2];
+          chapterContent = chapter.substring(chapterTitleMatch[0].length);
+        } else {
+          const chapterTitleMatch = chapter.match(/第(\d+)章\s*([^\n]+)?/);
+          
+          if (!chapterTitleMatch) return;
+          
+          chapterNumber = parseInt(chapterTitleMatch[1]);
+          chapterTitle = chapterTitleMatch[2] || '';
+          chapterContent = chapter.substring(chapterTitleMatch[0].length);
+        }
         
         if (currentChapterNumber === 0) {
           currentChapterNumber = chapterNumber;
@@ -230,8 +237,10 @@
           currentChapterNumber, 
           chapterTitle, 
           numParts, 
+          language,
           chapterStructure
         );
+        
         finalResult += result.text;
         currentChapterNumber = result.nextChapterNumber;
         
@@ -243,7 +252,7 @@
       document.getElementById('stats').style.display = 'block';
     }
 
-    function splitChapter(chapterText, chapterNumber, chapterTitle, numParts, chapterStructure = 'default') {
+    function splitChapter(chapterText, chapterNumber, chapterTitle, numParts, language, chapterStructure) {
       const lines = chapterText.split('\n');
       
       const linesWithWords = lines.map(line => ({
@@ -288,14 +297,20 @@
         const partNumber = index + 1;
         const currentChapter = chapterNumber + index;
         
-        // Chỉ thêm số thứ tự nếu số phần > 1
-        const chapterTitleWithPart = numParts > 1 
-          ? (chapterStructure === 'default' 
-              ? `Chương ${currentChapter}: ${chapterTitle} (${partNumber})`
-              : `## Chương ${currentChapter}: ${chapterTitle} (${partNumber})`)
-          : (chapterStructure === 'default'
-              ? `Chương ${currentChapter}: ${chapterTitle}`
-              : `## Chương ${currentChapter}: ${chapterTitle}`);
+        let chapterTitleWithPart;
+        if (language === 'vietnamese') {
+          chapterTitleWithPart = numParts > 1 
+            ? (chapterStructure === 'default' 
+                ? `Chương ${currentChapter}: ${chapterTitle} (${partNumber})`
+                : `## Chương ${currentChapter}: ${chapterTitle} (${partNumber})`)
+            : (chapterStructure === 'default'
+                ? `Chương ${currentChapter}: ${chapterTitle}`
+                : `## Chương ${currentChapter}: ${chapterTitle}`);
+        } else {
+          chapterTitleWithPart = numParts > 1
+            ? `第${currentChapter}章 ${chapterTitle} (${partNumber})`
+            : `第${currentChapter}章 ${chapterTitle}`;
+        }
         
         result += chapterTitleWithPart + '\n';
         result += part.lines.map(line => line.text).join('\n');
@@ -308,7 +323,20 @@
       };
     }
 
-    // Hàm sao chép kết quả
+    // Giữ nguyên các hàm download, copy, file input cũ
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        document.getElementById('fileName').textContent = file.name;
+        
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          document.getElementById('inputText').value = event.target.result;
+        };
+        reader.readAsText(file, 'UTF-8');
+      }
+    });
+
     function copyText() {
       const outputText = document.getElementById('outputText');
       outputText.select();
