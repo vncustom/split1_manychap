@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Text Splitter v3.1</title>
+  <title>Smart Text Splitter v2.5</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -207,9 +207,9 @@
     <div class="note">
       <strong>Supported formats (auto-detected):</strong>
       <ul>
-        <li>Vietnamese: "Chương X", "Phần X", "Bài X" (with or without colon)</li>
+        <li>Vietnamese: "Chương X", "Phần X", "Bài X"</li>
         <li>Chinese: "第X章", "第X节", "第X回", "第X篇"</li>
-        <li>English: "Chapter X", "Chapter X:" (with optional title)</li>
+        <li>English: "Chapter X", "Chapter X:"</li>
       </ul>
     </div>
     
@@ -241,8 +241,9 @@
     
     <div class="advanced-options" id="advancedOptions">
       <div class="form-group">
-        <label for="minWords">Minimum words per part:</label>
-        <input type="number" id="minWords" min="50" value="1">
+        <label for="minLength">Minimum length per part:</label>
+        <input type="number" id="minLength" min="50" value="10">
+        <span id="lengthUnit">words</span>
       </div>
       <div class="form-group">
         <label>
@@ -324,7 +325,7 @@
       document.getElementById('languageInfo').style.display = 'none';
     }
 
-    // Improved language detection with precise English regex
+    // Improved language detection
     function detectLanguageAndStructure(text) {
       const patterns = [
         // Vietnamese
@@ -334,7 +335,7 @@
         // Chinese
         { language: 'chinese', structure: 'default', regex: /^(第\d+[章节篇回])(\s|$)/m },
         
-        // English (updated with precise Chapter regex)
+        // English
         { language: 'english', structure: 'default', regex: /^Chapter\s+\d+(:|\.|\s|$)/mi },
         { language: 'english', structure: 'number-only', regex: /^(\d+)\.\s/m }
       ];
@@ -371,15 +372,30 @@
         'english': 'English'
       };
 
+      // Update length unit display
+      const lengthUnit = document.getElementById('lengthUnit');
+      lengthUnit.textContent = detectedLanguage === 'chinese' ? 'characters' : 'words';
+
       document.getElementById('languageInfo').textContent = 
         `Detected: ${languageNames[detectedLanguage]} (${detectedStructure} format)`;
       document.getElementById('languageInfo').style.display = 'block';
     }
 
+    // Calculate text length based on language
+    function calculateTextLength(text) {
+      if (detectedLanguage === 'chinese') {
+        // Count Chinese characters (ignore spaces)
+        return text.replace(/\s+/g, '').length;
+      } else {
+        // Count words for Vietnamese/English
+        return text.split(/\s+/).filter(w => w.trim()).length;
+      }
+    }
+
     function splitText() {
       const inputText = document.getElementById('inputText').value;
       const numParts = parseInt(document.getElementById('numParts').value) || 2;
-      const minWords = parseInt(document.getElementById('minWords').value) || 200;
+      const minLength = parseInt(document.getElementById('minLength').value) || 200;
       const keepOriginal = document.getElementById('keepOriginal').checked;
       const addPageBreak = document.getElementById('addPageBreak').checked;
 
@@ -416,7 +432,6 @@
           if (detectedStructure === 'number-only') {
             splitRegex = /(?=^\d+\.\s)/m;
           } else {
-            // Precise English chapter splitting
             splitRegex = /(?=^Chapter\s+\d+(:|\.|\s|$))/mi;
           }
         }
@@ -432,7 +447,7 @@
 
         let finalResult = '';
         let currentChapterNumber = 0;
-        let totalWords = 0;
+        let totalLength = 0;
         let totalChapters = 0;
 
         chapters.forEach((chapter, index) => {
@@ -480,7 +495,6 @@
               chapterTitle = (chapterTitleMatch[2] || '').trim();
               chapterContent = chapter.substring(chapterTitleMatch[0].length);
             } else {
-              // Precise English chapter matching
               chapterTitleMatch = chapter.match(/^Chapter\s+(\d+)(:|\.|\s|$)(.*?)$/mi);
               if (!chapterTitleMatch) return;
               
@@ -494,12 +508,14 @@
             currentChapterNumber = chapterNumber;
           }
           
-          const wordCount = chapterContent.split(/\s+/).filter(w => w.trim()).length;
-          totalWords += wordCount;
+          // Calculate chapter length (characters for Chinese, words for others)
+          const chapterLength = calculateTextLength(chapterContent);
+          totalLength += chapterLength;
           
+          // Determine actual number of parts
           let actualParts = numParts;
-          if (wordCount / numParts < minWords) {
-            actualParts = Math.max(1, Math.floor(wordCount / minWords));
+          if (chapterLength / numParts < minLength) {
+            actualParts = Math.max(1, Math.floor(chapterLength / minLength));
           }
           
           const result = splitChapter(
@@ -520,11 +536,14 @@
         });
 
         document.getElementById('outputText').value = finalResult;
+        
+        // Update stats with appropriate unit
+        const lengthUnit = detectedLanguage === 'chinese' ? 'characters' : 'words';
         document.getElementById('stats').innerHTML = `
           <strong>Statistics:</strong><br>
           - Total chapters: ${totalChapters}<br>
-          - Total words: ${totalWords}<br>
-          - Average words per part: ${Math.round(totalWords/(totalChapters*numParts))}
+          - Total ${lengthUnit}: ${totalLength}<br>
+          - Average ${lengthUnit} per part: ${Math.round(totalLength/(totalChapters*numParts))}
         `;
         document.getElementById('stats').style.display = 'block';
         showProgress(100);
@@ -547,7 +566,7 @@
         if (line.trim() === '' && currentParagraph.length > 0) {
           paragraphs.push({
             text: currentParagraph.join('\n'),
-            wordCount: currentParagraph.join(' ').split(/\s+/).filter(w => w.trim()).length
+            length: calculateTextLength(currentParagraph.join('\n'))
           });
           currentParagraph = [];
         } else {
@@ -558,39 +577,39 @@
       if (currentParagraph.length > 0) {
         paragraphs.push({
           text: currentParagraph.join('\n'),
-          wordCount: currentParagraph.join(' ').split(/\s+/).filter(w => w.trim()).length
+          length: calculateTextLength(currentParagraph.join('\n'))
         });
       }
 
-      const totalWords = paragraphs.reduce((sum, p) => sum + p.wordCount, 0);
-      const targetWordsPerPart = Math.ceil(totalWords / numParts);
+      const totalLength = paragraphs.reduce((sum, p) => sum + p.length, 0);
+      const targetLengthPerPart = Math.ceil(totalLength / numParts);
 
       const parts = [];
       let currentPart = [];
-      let currentWordCount = 0;
+      let currentLength = 0;
 
       paragraphs.forEach((paragraph) => {
         if (
-          currentWordCount + paragraph.wordCount > targetWordsPerPart &&
+          currentLength + paragraph.length > targetLengthPerPart &&
           parts.length < numParts - 1 &&
-          currentWordCount > 0
+          currentLength > 0
         ) {
           parts.push({
             text: currentPart.join('\n\n'),
-            wordCount: currentWordCount
+            length: currentLength
           });
           currentPart = [paragraph.text];
-          currentWordCount = paragraph.wordCount;
+          currentLength = paragraph.length;
         } else {
           currentPart.push(paragraph.text);
-          currentWordCount += paragraph.wordCount;
+          currentLength += paragraph.length;
         }
       });
 
       if (currentPart.length > 0) {
         parts.push({
           text: currentPart.join('\n\n'),
-          wordCount: currentWordCount
+          length: currentLength
         });
       }
 
@@ -628,7 +647,6 @@
               ? `${currentChapter}. ${chapterTitle} (Part ${partNumber})`
               : `${currentChapter}. ${chapterTitle}`;
           } else {
-            // Proper English chapter formatting
             const separator = chapterTitle ? ': ' : '';
             chapterTitleWithPart = numParts > 1
               ? `Chapter ${currentChapter}${separator}${chapterTitle} (Part ${partNumber})`
